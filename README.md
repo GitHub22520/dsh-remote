@@ -29,6 +29,15 @@
 
 ## 快速开始
 
+> **安装 ≠ 配置。** `dsh plugin --profile web add …` 只是把代码放进 profile，不会问你任何问题；插件也不知道你的服务器地址，所以**两个角色都必须再写一条配置**。
+>
+> 配置写在当前 profile 的 `cordis.patch.yml` 末尾（顶层数组）：
+>
+> - Linux / macOS：`~/.dsh/profiles/web/cordis.patch.yml`
+> - Windows：`C:\Users\<你>\.dsh\profiles\web\cordis.patch.yml`
+>
+> 忘了写也没关系：打开 dsh，侧边栏的「远程 DSH」面板会直接告诉你该写什么、写进哪个文件。
+
 两步，分别在不同的机器上执行。下文中：
 
 - **宿主机**＝你通过浏览器/域名访问的那台（把别人的 dsh 挂进来）；
