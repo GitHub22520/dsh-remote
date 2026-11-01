@@ -1,0 +1,4 @@
+node_modules/
+.test-home/
+*.log
+.DS_Store

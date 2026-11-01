@@ -1,0 +1,51 @@
+{
+  "name": "dsh-remote",
+  "version": "0.1.0",
+  "description": "Mount another machine's dsh web GUI inside this dsh: a path-scoped reverse proxy plus a sidebar panel that embeds the chosen remote (typically your PC, reached over an ssh -R tunnel).",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "cordis.patch.yml",
+    "pc",
+    "docs",
+    "install.sh",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "dsh-client-plugin",
+    "remote",
+    "reverse-proxy",
+    "ssh"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GitHub22520/dsh-remote.git"
+  },
+  "homepage": "https://github.com/GitHub22520/dsh-remote#readme",
+  "bugs": {
+    "url": "https://github.com/GitHub22520/dsh-remote/issues"
+  },
+  "license": "MIT"
+}

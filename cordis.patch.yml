@@ -1,0 +1,6 @@
+# dsh-remote bundle layer: one loader row whose main entry is the host half
+# (the reverse proxy); `dsh.client` in package.json makes the web app load
+# ./client.js as the browser half (the sidebar panel).
+- insert:
+    - id: dsh-remote
+      name: dsh-remote
