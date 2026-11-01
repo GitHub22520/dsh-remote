@@ -29,72 +29,57 @@
 
 ## 快速开始
 
-> **安装 ≠ 配置。** `dsh plugin --profile web add …` 只是把代码放进 profile，不会问你任何问题；插件也不知道你的服务器地址，所以**两个角色都必须再写一条配置**。
->
-> 配置写在当前 profile 的 `cordis.patch.yml` 末尾（顶层数组）：
->
-> - Linux / macOS：`~/.dsh/profiles/web/cordis.patch.yml`
-> - Windows：`C:\Users\<你>\.dsh\profiles\web\cordis.patch.yml`
->
-> 如果这个文件里只有模板留下的一行 `[]`，把它整行替换成下面的配置块（`[]` 后面直接追加会变成非法 YAML）。
->
-> 忘了写也没关系：打开 dsh，侧边栏的「远程 DSH」面板会直接告诉你该写什么、写进哪个文件。
+> **装完不用改文件。** 安装只是把代码放进 profile；之后打开 dsh →「插件」→ 点 `dsh-remote` → 在它的页面里选角色、填服务器、点一次「保存并应用」，插件自己把配置写进当前 profile 并热重载。手写 YAML 只是没有界面时的兜底。
 
-两步，分别在不同的机器上执行。下文中：
-
-- **宿主机**＝你通过浏览器/域名访问的那台（把别人的 dsh 挂进来）；
-- **被远程机器**＝要远程过去的那台（例如你的 PC）。
-
-### 1. 宿主机：装插件 + 一条配置
+### 1. 两端各装一次插件
 
 ```bash
 dsh plugin --profile web add "github:GitHub22520/dsh-remote"
 ```
 
-编辑 `~/.dsh/profiles/web/cordis.patch.yml`，在顶层数组末尾追加：
+### 2. 在界面里配置（两端各一次）
+
+打开 dsh → 左侧「插件」→ 底部「已安装插件」里的 `dsh-remote` → 页面中的 **dsh-remote 配置**：
+
+| 这台机器是 | 填什么 |
+|---|---|
+| **宿主机**（你通过浏览器访问的那台） | 远端地址 `http://127.0.0.1:18081`、显示名（任意） |
+| **被远程的一方**（你的 PC） | 服务器地址 `user@your-server`（宿主机上能免密 SSH 的账号）、远端端口 `18081` |
+
+点「保存并应用」，页面会自动刷新，配置写进 `~/.dsh/profiles/<profile>/cordis.patch.yml` 并立即生效，不需要终端、不需要重启（重载由 Loader 完成）。
+
+> 同一台机器也可以同时配两种角色（既挂别人、也被别人挂）。
+
+### 3. 打开
+
+宿主机上打开 dsh → 侧边栏「远程 DSH」→ 卡片显示**在线** → 点「打开」。
+
+### 手写配置（可选，界面不可用时）
+
+编辑当前 profile 的 `cordis.patch.yml`（Linux/macOS：`~/.dsh/profiles/web/cordis.patch.yml`，Windows：`C:\Users\<你>\.dsh\profiles\web\cordis.patch.yml`）。如果文件里只有模板留下的 `[]`，整行替换掉，不要直接追加。
+
+宿主机：
 
 ```yaml
 - id: dsh-remote
   config:
     remotes:
-      - id: pc                     # 路径段与面板标识
-        label: 我的 PC              # 面板里显示的名字
-        target: http://127.0.0.1:18081   # 隧道在宿主机回环上的端口
+      - id: pc
+        label: 我的 PC
+        target: http://127.0.0.1:18081
 ```
 
-`tokenFile` 默认是 `~/.dsh/remotes/<id>.token`，正好是 agent 默认发布的位置，通常不用写。
-
-重启宿主机 dsh（或等 HMR 热加载）：
-
-```bash
-sudo systemctl restart dsh-web    # 换成本机实际的启动方式
-```
-
-### 2. 被远程机器：同样装插件，换成 agent 配置
-
-```bash
-dsh plugin --profile web add "github:GitHub22520/dsh-remote"
-```
+被远程的一方：
 
 ```yaml
 - id: dsh-remote
   config:
     agent:
-      ssh: you@your-server         # 能免密 SSH 到宿主机的账号
-      remotePort: 18081            # 与宿主机 remotes[].target 的端口一致
+      ssh: you@your-server
+      remotePort: 18081
 ```
 
-然后重启这台机器上的 dsh。插件会：
-
-- 等自己的 web 端口绑定后，建立 `ssh -N -R 127.0.0.1:18081:127.0.0.1:<本机端口> you@your-server`；
-- 把自己进程的启动令牌通过同一条 SSH 写进宿主机的 `~/.dsh/remotes/pc.token`；
-- 隧道断开自动重连，重连后重新发布令牌。
-
-前置条件只有一个：**这台机器能免密 SSH 登录宿主机**（`ssh you@your-server true` 不提示密码）。没有免密就用 SSH key 或 `ssh-agent`。
-
-### 3. 打开
-
-宿主机上打开 dsh → 侧边栏「远程 DSH」→ 卡片显示**在线** → 点「打开」。
+改完重启那台机器上的 dsh。
 
 ## 使用说明
 
