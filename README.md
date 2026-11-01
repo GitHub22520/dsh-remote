@@ -140,6 +140,8 @@ dsh plugin --profile web add "github:GitHub22520/dsh-remote"
 | `agent.tokenPath` | `~/.dsh/remotes/<id>.token` | 令牌写到宿主机的路径（`~` 是宿主机上该用户的家目录） |
 | `agent.sshBin` | `ssh` | ssh 可执行文件 |
 | `agent.extraArgs` | `[]` | 追加给 ssh 的参数，例如 `['-p','2222']` |
+| `agent.web` | `auto` | 隧道指向哪个本机 web 服务：`self` = 本进程自己的；`spawn` = 另起一个 `dsh web` 子进程再指向它。`auto` 在 Electron（桌面版）里自动选 `spawn`，因为桌面的内嵌服务不接受浏览器请求 |
+| `agent.webProfile` | `dsh-remote-web` | `spawn` 用的 profile 名，首次会从模板自动创建；它只是一个纯 web 实例，和你桌面版的插件互不影响 |
 
 ## 排查
 
@@ -158,7 +160,11 @@ dsh plugin --profile web add "github:GitHub22520/dsh-remote"
 
 ### 被远程的机器是桌面版（Electron）怎么办
 
-桌面版（`dsh-plugin-desktop-beta` 一类）的 web 服务只服务它自己的渲染进程，代理过去的浏览器请求会得到 `Browser access is disabled`。这时在 PC 上单独起一个纯 web 实例给隧道用即可（会话存在 `DSH_HOME` 里，是共享的）：
+桌面版（`dsh-plugin-desktop-beta` 一类）的 web 服务只服务它自己的渲染进程，代理过去的浏览器请求会得到 `Browser access is disabled`。
+
+**从 0.1.x 起这条已经自动处理了**：插件检测到自己在 Electron 里时，会自动拉起一个纯 `dsh web` 子进程（profile `dsh-remote-web`，首次从模板创建），把隧道指向它。你不需要做任何事，点「保存并应用」即可。
+
+下面是手动等价做法，供排障时使用（会话存在 `DSH_HOME` 里，是共享的）：
 
 ```bash
 # 1. 用一个干净 profile，避免把桌面版那几行插件带进来
