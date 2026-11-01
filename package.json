@@ -6,12 +6,10 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./client": "./lib/client.js",
     "./package.json": "./package.json"
   },
   "files": [
     "lib/index.js",
-    "lib/client.js",
     "cordis.patch.yml",
     "pc",
     "docs",
@@ -19,16 +17,6 @@
     "README.md",
     "LICENSE"
   ],
-  "dsh": {
-    "bundle": {
-      "patch": "./cordis.patch.yml"
-    },
-    "client": {
-      "platform": "web",
-      "inject": [],
-      "external": []
-    }
-  },
   "engines": {
     "node": ">=20"
   },
