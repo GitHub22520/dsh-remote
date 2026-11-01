@@ -37,6 +37,11 @@ if grep -q "id: dsh-remote" "$PATCH"; then
 else
   BACKUP="$PATCH.bak.$(date +%Y%m%d-%H%M%S)"
   cp "$PATCH" "$BACKUP"
+  # 模板 profile 的 patch 往往只有一行空数组 `[]`；直接追加会变成非法 YAML。
+  if grep -qE '^[[:space:]]*\[\][[:space:]]*$' "$PATCH"; then
+    sed -i -E '/^[[:space:]]*\[\][[:space:]]*$/d' "$PATCH"
+    echo "→ 已把模板里的空数组 \`[]\` 删掉，改成条目列表"
+  fi
   cat >>"$PATCH" <<YAML
 
 # dsh-remote：把 PC 上的 dsh 挂到 /remotes/<id>/，并在侧边栏提供「远程 DSH」面板。

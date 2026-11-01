@@ -36,6 +36,8 @@
 > - Linux / macOS：`~/.dsh/profiles/web/cordis.patch.yml`
 > - Windows：`C:\Users\<你>\.dsh\profiles\web\cordis.patch.yml`
 >
+> 如果这个文件里只有模板留下的一行 `[]`，把它整行替换成下面的配置块（`[]` 后面直接追加会变成非法 YAML）。
+>
 > 忘了写也没关系：打开 dsh，侧边栏的「远程 DSH」面板会直接告诉你该写什么、写进哪个文件。
 
 两步，分别在不同的机器上执行。下文中：
