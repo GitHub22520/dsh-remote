@@ -149,7 +149,7 @@ dsh plugin --profile web add "github:GitHub22520/dsh-remote"
 
 | 字段 | 默认 | 说明 |
 |---|---|---|
-| `agent.ssh` | — | **必填**，`user@host`，宿主机上的 SSH 账号（需免密） |
+| `agent.ssh` | — | **必填**，`user@host`（**别只写 IP**，否则会用本机用户名登录），宿主机上的 SSH 账号，需免密；主机密钥首次连接自动记录（`StrictHostKeyChecking=accept-new`） |
 | `agent.id` | `pc` | 与宿主机 `remotes[].id` 对应，也决定令牌文件名 |
 | `agent.remotePort` | `18081` | 宿主机回环上发布的端口 |
 | `agent.tokenPath` | `~/.dsh/remotes/<id>.token` | 令牌写到宿主机的路径（`~` 是宿主机上该用户的家目录） |
@@ -168,6 +168,7 @@ dsh plugin --profile web add "github:GitHub22520/dsh-remote"
 | 宿主机侧边栏没有「远程 DSH」 | 没有配置 `remotes`（只有 `agent:` 的机器不显示面板），或插件没加载。自检：`curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:<dsh端口>/remotes/_api/list`，返回 401 说明路由在 |
 | `dsh plugin add` 失败 | 确认 `git ls-remote https://github.com/GitHub22520/dsh-remote.git` 能通；pnpm 需要访问 GitHub |
 | agent 报 `BatchMode` / `Permission denied` | 免密没配好：`ssh you@your-server true` 必须直接返回 |
+| 被远程机器的面板里显示 agent 出错 | 面板会直接给出最近一次 ssh 的错误（如 `Host key verification failed.`、`Permission denied (publickey)`），照提示修配置即可 |
 
 ## 可选：不装插件，单独跑 agent 脚本
 
