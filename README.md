@@ -164,11 +164,27 @@ dsh plugin --profile web add "github:GitHub22520/dsh-remote"
 | 打开后「远端 DSH 尚未就绪」 | 令牌没发布。宿主机上 `ls -l ~/.dsh/remotes/pc.token` 的时间戳应是刚刚；没有文件说明 agent 没连上 |
 | 打开后「远端令牌无效」 | 被远程的 dsh 重启过但令牌没更新：确认 agent 仍在运行（它会重发），或手动重启该机器的 dsh |
 | 打开后「连不上远端 DSH」 | 隧道在但端口不通：被远程机器的 dsh 是否真的在监听 |
+| 打开后显示 `Browser access is disabled` | 被远程机器跑的是**桌面版**：它的内嵌服务会拒绝浏览器来源的请求。在 PC 上另起一个纯 `dsh web` 实例给隧道用（见下），或在桌面插件的设置里打开浏览器访问 |
 | 页面能开但操作无响应 | WebSocket 升级失败：多为令牌失效，重启被远程机器的 dsh 让 agent 重发令牌 |
 | 宿主机侧边栏没有「远程 DSH」 | 没有配置 `remotes`（只有 `agent:` 的机器不显示面板），或插件没加载。自检：`curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:<dsh端口>/remotes/_api/list`，返回 401 说明路由在 |
 | `dsh plugin add` 失败 | 确认 `git ls-remote https://github.com/GitHub22520/dsh-remote.git` 能通；pnpm 需要访问 GitHub |
 | agent 报 `BatchMode` / `Permission denied` | 免密没配好：`ssh you@your-server true` 必须直接返回 |
 | 被远程机器的面板里显示 agent 出错 | 面板会直接给出最近一次 ssh 的错误（如 `Host key verification failed.`、`Permission denied (publickey)`），照提示修配置即可 |
+
+### 被远程的机器是桌面版（Electron）怎么办
+
+桌面版（`dsh-plugin-desktop-beta` 一类）的 web 服务只服务它自己的渲染进程，代理过去的浏览器请求会得到 `Browser access is disabled`。这时在 PC 上单独起一个纯 web 实例给隧道用即可（会话存在 `DSH_HOME` 里，是共享的）：
+
+```bash
+# 1. 用一个干净 profile，避免把桌面版那几行插件带进来
+dsh pc-remote --from-default-profile web
+
+# 2. 装插件并写 agent 配置到 ~/.dsh/profiles/pc-remote/cordis.patch.yml
+dsh plugin --profile pc-remote add "github:GitHub22520/dsh-remote"
+
+# 3. 启动（只监听回环，端口随意，插件会自己建隧道）
+dsh pc-remote --host 127.0.0.1 --port 3081 --no-open
+```
 
 ## 可选：不装插件，单独跑 agent 脚本
 
